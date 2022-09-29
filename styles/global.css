@@ -51,6 +51,8 @@ body {
 
 main {
     padding: 20px;
+    display: grid;
+    grid-template-rows: 100px 1fr;
 }
 
 .avatar {
@@ -68,4 +70,18 @@ main {
 
 .hidden {
     display: none;
+}
+
+#inputs {
+    display: grid;
+    justify-items: center;
+}
+
+#display {
+    display: grid;
+    justify-items: center;
+}
+
+.bought {
+    text-decoration: line-through;
 }

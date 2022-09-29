@@ -1,5 +1,6 @@
-const SUPABASE_URL = '';
-const SUPABASE_KEY = '';
+const SUPABASE_URL = 'https://qzjxjzoitkpoyrvazfle.supabase.co';
+const SUPABASE_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6anhqem9pdGtwb3lydmF6ZmxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjQ0Njg2MTMsImV4cCI6MTk4MDA0NDYxM30.-YXcZyjlSS51RFUvLqaaH6lUZ31UitcwsGaDmxSze_E';
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* Auth related functions */
@@ -27,3 +28,23 @@ export async function signOutUser() {
 }
 
 /* Data functions */
+export async function createItem(item) {
+    return await client.from('lists').insert(item).single();
+}
+
+export async function getItem() {
+    return await client.from('lists').select('*').order('created_at');
+}
+
+export async function buyItem(id) {
+    return await client.from('lists').update({ bought: true }).eq('id', id).single();
+}
+
+export async function deleteItem() {
+    const user = getUser();
+    return await client.from('lists').delete().eq('user_id', user.id);
+}
+
+export async function deleteBought() {
+    return await client.from('lists').delete().match({ bought: true });
+}
