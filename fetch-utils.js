@@ -44,3 +44,7 @@ export async function deleteItem() {
     const user = getUser();
     return await client.from('lists').delete().eq('user_id', user.id);
 }
+
+export async function deleteBought() {
+    return await client.from('lists').delete().match({ bought: true });
+}
