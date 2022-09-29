@@ -1,7 +1,7 @@
 /* Imports */
 // this will check if we have a user and set signout link if it exists
 import './auth/user.js';
-import { createItem } from './fetch-utils.js';
+import { createItem, getItem, buyItem } from './fetch-utils.js';
 
 /* Get DOM Elements */
 const addItemForm = document.getElementById('add-item-form');
@@ -13,6 +13,20 @@ let items = [];
 let error = null;
 
 /* Events */
+
+window.addEventListener('load', async () => {
+    const response = await getItem();
+    error = response.error;
+    items = response.data;
+
+    if (error) {
+        displayError();
+    }
+
+    if (items) {
+        displayItems();
+    }
+});
 
 addItemForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -53,14 +67,13 @@ function displayItems() {
         for (const item of items) {
             const itemEl = renderItem(item);
             itemList.append(itemEl);
-            // displayItems();
+            displayItems();
 
-            /* 
             itemEl.addEventListener('click', async () => {
                 const response = await buyItem(item.id);
                 error = response.error;
                 const updatedItem = response.data;
-    
+
                 if (error) {
                     displayError();
                 } else {
@@ -68,8 +81,7 @@ function displayItems() {
                     items[index] = updatedItem;
                     displayItems();
                 }
-            });  
-            */
+            });
         }
     }
 }
