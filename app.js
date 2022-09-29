@@ -1,35 +1,37 @@
 /* Imports */
 // this will check if we have a user and set signout link if it exists
 import './auth/user.js';
-import { createTodo } from './fetch-utils.js';
+import { createItem } from './fetch-utils.js';
 
 /* Get DOM Elements */
-const addTodoForm = document.getElementById('add-item-form');
-const todoList = document.getElementById('todo-list');
+const addItemForm = document.getElementById('add-item-form');
+const itemList = document.getElementById('item-list');
+const errorDisplay = document.getElementById('error-display');
 
 /* State */
-let todos = [];
+let items = [];
 let error = null;
 
 /* Events */
 
-addTodoForm.addEventListener('submit', async (e) => {
+addItemForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const formData = new FormData(addTodoForm);
-    const newTodo = {
-        description: formData.get('description'),
+    const formData = new FormData(addItemForm);
+    const newItem = {
+        item: formData.get('item'),
+        quantity: formData.get('quantity'),
     };
 
-    const response = await createTodo(newTodo);
+    const response = await createItem(newItem);
     error = response.error;
-    const todo = response.data;
+    const item = response.data;
 
     if (error) {
         displayError();
     } else {
-        todos.push(todo);
-        displayTodos();
-        addTodoForm.reset();
+        items.push(item);
+        displayItems();
+        addItemForm.reset();
     }
 });
 /* Display Functions */
@@ -38,29 +40,46 @@ function displayError() {
     if (error) {
         errorDisplay.textContent = error.message;
     } else {
-        errorDisplay.textContent = '';
+        errorDisplay.textContent = 'error';
     }
 }
 
-function displayTodos() {
-    todoList.innerHTML = '';
+function displayItems() {
+    itemList.innerHTML = '';
 
-    for (const todo of todos) {
-        const todoEl = renderTodo(todo);
-        todoList.append(todoEl);
+    if (error) {
+        displayError();
+    } else {
+        for (const item of items) {
+            const itemEl = renderItem(item);
+            itemList.append(itemEl);
+            // displayItems();
 
-        todoEl.addEventListener('click', async () => {
-            const response = await completeTodo(todo.id);
-            error = response.error;
-            const updatedTodo = response.data;
-
-            if (error) {
-                displayError();
-            } else {
-                const index = todos.indexOf(todo);
-                todos[index] = updatedTodo;
-                displayTodos();
-            }
-        });
+            /* 
+            itemEl.addEventListener('click', async () => {
+                const response = await buyItem(item.id);
+                error = response.error;
+                const updatedItem = response.data;
+    
+                if (error) {
+                    displayError();
+                } else {
+                    const index = items.indexOf(item);
+                    items[index] = updatedItem;
+                    displayItems();
+                }
+            });  
+            */
+        }
     }
+}
+
+function renderItem(item) {
+    const li = document.createElement('li');
+    const p = document.createElement('p');
+
+    p.textContent = `${item.quantity} ${item.item}`;
+    li.append(p);
+
+    return li;
 }
