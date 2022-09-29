@@ -28,3 +28,6 @@ export async function signOutUser() {
 }
 
 /* Data functions */
+export async function createTodo(todo) {
+    return await client.from('todos').insert(todo).single();
+}
