@@ -36,6 +36,11 @@ export async function getItem() {
     return await client.from('lists').select('*').order('created_at');
 }
 
-export async function buyItem() {
-    return await client.from('lists').update({ complete: true }).eq('id', id).single();
+export async function buyItem(id) {
+    return await client.from('lists').update({ bought: true }).eq('id', id).single();
+}
+
+export async function deleteItem() {
+    const user = getUser();
+    return await client.from('lists').delete().eq('user_id', user.id);
 }

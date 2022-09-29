@@ -1,12 +1,13 @@
 /* Imports */
 // this will check if we have a user and set signout link if it exists
 import './auth/user.js';
-import { createItem, getItem, buyItem } from './fetch-utils.js';
+import { createItem, getItem, buyItem, deleteItem } from './fetch-utils.js';
 
 /* Get DOM Elements */
 const addItemForm = document.getElementById('add-item-form');
 const itemList = document.getElementById('item-list');
 const errorDisplay = document.getElementById('error-display');
+const removeButton = document.getElementById('remove-button');
 
 /* State */
 let items = [];
@@ -48,13 +49,26 @@ addItemForm.addEventListener('submit', async (e) => {
         addItemForm.reset();
     }
 });
+
+removeButton.addEventListener('click', async () => {
+    const response = await deleteItem();
+    error = response.error;
+
+    if (error) {
+        displayError();
+    } else {
+        items = [];
+        displayItems();
+    }
+});
+
 /* Display Functions */
 
 function displayError() {
     if (error) {
         errorDisplay.textContent = error.message;
     } else {
-        errorDisplay.textContent = 'error';
+        errorDisplay.textContent = '';
     }
 }
 
@@ -64,10 +78,9 @@ function displayItems() {
     if (error) {
         displayError();
     } else {
-        for (const item of items) {
+        for (let item of items) {
             const itemEl = renderItem(item);
             itemList.append(itemEl);
-            displayItems();
 
             itemEl.addEventListener('click', async () => {
                 const response = await buyItem(item.id);
@@ -88,10 +101,12 @@ function displayItems() {
 
 function renderItem(item) {
     const li = document.createElement('li');
-    const p = document.createElement('p');
 
-    p.textContent = `${item.quantity} ${item.item}`;
-    li.append(p);
+    if (item.bought) {
+        li.classList.add('bought');
+    }
+
+    li.textContent = `${item.quantity} ${item.item}`;
 
     return li;
 }
